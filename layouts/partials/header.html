@@ -71,6 +71,11 @@
                                 <i class="fa fa-envelope"></i>
                             </a>
                         {{ end }}
+                        {{ with .Site.Params.homepage }}
+                        <a class="button-square button-social hint--top" data-hint="Homepage" title="Author's Home" href="{{ . }}">
+                            <i class="fa fa-home"></i>
+                        </a>
+                    {{ end }}
                     </div>
 
                     <ul class="site-nav">
