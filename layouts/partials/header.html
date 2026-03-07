@@ -26,6 +26,24 @@
     <body>
         {{ template "_internal/google_analytics.html" . }}
 
+        <div class="settings-bar" id="settings-bar">
+            <button class="settings-btn" id="settings-toggle" aria-label="Settings" title="Settings">
+                <i class="fa fa-cog" aria-hidden="true"></i>
+            </button>
+            <div class="settings-actions">
+                <button class="settings-btn" id="font-decrease" aria-label="Decrease font size" title="Decrease font size">
+                    <span class="font-label">A</span><span class="font-symbol">&minus;</span>
+                </button>
+                <button class="settings-btn" id="font-increase" aria-label="Increase font size" title="Increase font size">
+                    <span class="font-label">A</span><span class="font-symbol">+</span>
+                </button>
+                <button class="settings-btn" id="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                    <i class="fa fa-moon-o icon-moon" aria-hidden="true"></i>
+                    <i class="fa fa-sun-o icon-sun" aria-hidden="true"></i>
+                </button>
+            </div>
+        </div>
+
         <div id="wrapper">
             <header class="site-header">
                 <div class="container">

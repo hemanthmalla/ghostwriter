@@ -1,0 +1,384 @@
+<style>
+    /* Font size scaling — multiply all hardcoded px sizes by the scale factor */
+    #container { font-size: calc(18px * var(--font-scale, 1)); }
+    #container h1 { font-size: calc(26px * var(--font-scale, 1)); }
+    #container h2 { font-size: calc(24px * var(--font-scale, 1)); }
+    #container h3 { font-size: calc(20px * var(--font-scale, 1)); }
+    #container h4 { font-size: calc(18px * var(--font-scale, 1)); }
+    #container h5 { font-size: calc(16px * var(--font-scale, 1)); }
+    #container h6 { font-size: calc(14px * var(--font-scale, 1)); }
+    #container pre { font-size: calc(16px * var(--font-scale, 1)); }
+    #container code { font-size: calc(90% * var(--font-scale, 1)); }
+    #container .post-title,
+    #container .page-title { font-size: calc(52px * var(--font-scale, 1)); }
+    #container .post-date,
+    #container .post-reading,
+    #container .blog-description { font-size: calc(14px * var(--font-scale, 1)); }
+    #container .post-tags,
+    #container .share { font-size: calc(14px * var(--font-scale, 1)); }
+    #container .share a { font-size: calc(16px * var(--font-scale, 1)); }
+    #container .post-stub-tag { font-size: calc(10px * var(--font-scale, 1)); }
+    #container .site-nav-item { font-size: calc(14px * var(--font-scale, 1)); }
+    #container .author-name { font-size: calc(52px * var(--font-scale, 1)); }
+    #container .author-meta { font-size: calc(14px * var(--font-scale, 1)); }
+
+    /* Settings bar */
+    .settings-bar {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        border: 2px solid #303030;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: width 0.3s ease, border-color 0.3s ease;
+        width: 40px;
+        height: 40px;
+        background: #fefefe;
+    }
+
+    .settings-bar.expanded {
+        width: 172px;
+    }
+
+    .settings-actions {
+        display: flex;
+        overflow: hidden;
+        white-space: nowrap;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        pointer-events: none;
+    }
+
+    .settings-bar.expanded .settings-actions {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .settings-btn {
+        background: none;
+        border: none;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        color: #303030;
+        padding: 0;
+        flex-shrink: 0;
+        border-radius: 50%;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .settings-btn:hover {
+        background: #F03838;
+        color: #fff;
+    }
+
+    .settings-btn .font-label {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .settings-btn .font-symbol {
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+        margin-left: 1px;
+    }
+
+    #settings-toggle .fa-cog {
+        transition: transform 0.3s ease;
+    }
+
+    .settings-bar.expanded #settings-toggle .fa-cog {
+        transform: rotate(90deg);
+    }
+
+    #dark-mode-toggle .icon-sun { display: none; }
+    #dark-mode-toggle .icon-moon { display: inline; }
+
+    /* Dark mode: only invert colors, leave everything else alone */
+    [data-theme="dark"] {
+        background: #1a1a2e;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .settings-bar {
+        border-color: #e0e0e0;
+        background: #1a1a2e;
+    }
+
+    [data-theme="dark"] .settings-btn {
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] #dark-mode-toggle .icon-sun { display: inline; }
+    [data-theme="dark"] #dark-mode-toggle .icon-moon { display: none; }
+
+    /* Header */
+    [data-theme="dark"] .site-header {
+        background: #1a1a2e;
+    }
+
+    [data-theme="dark"] .site-title a:hover {
+        background: #e0e0e0;
+        color: #1a1a2e;
+    }
+
+    [data-theme="dark"] .button-square:hover {
+        background: #e0e0e0;
+        color: #1a1a2e;
+    }
+
+    [data-theme="dark"] .site-nav-item a {
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .site-nav-item a:hover {
+        color: #F03838;
+    }
+
+    /* Body / Content */
+    [data-theme="dark"] h1,
+    [data-theme="dark"] h2,
+    [data-theme="dark"] h3,
+    [data-theme="dark"] h4,
+    [data-theme="dark"] h5,
+    [data-theme="dark"] h6 {
+        color: #f0f0f0;
+    }
+
+    [data-theme="dark"] p,
+    [data-theme="dark"] li,
+    [data-theme="dark"] td,
+    [data-theme="dark"] th {
+        color: #d0d0d0;
+    }
+
+    [data-theme="dark"] a {
+        color: #ff6b6b;
+    }
+
+    [data-theme="dark"] blockquote {
+        border-left-color: #ff6b6b;
+    }
+
+    [data-theme="dark"] blockquote p {
+        color: #999;
+    }
+
+    [data-theme="dark"] pre {
+        background: #16213e;
+        border-color: #2a2a4a;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] code {
+        background-color: #16213e;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] hr {
+        border-bottom-color: #444;
+    }
+
+    [data-theme="dark"] table tbody > tr:nth-child(odd) > td,
+    [data-theme="dark"] table tbody > tr:nth-child(odd) > th {
+        background-color: #16213e;
+    }
+
+    [data-theme="dark"] table tr {
+        border-bottom-color: #444;
+    }
+
+    /* Post elements */
+    [data-theme="dark"] .post-header {
+        border-bottom-color: #555;
+    }
+
+    [data-theme="dark"] .post-title,
+    [data-theme="dark"] .page-title {
+        color: #f0f0f0;
+    }
+
+    [data-theme="dark"] .post-date,
+    [data-theme="dark"] .post-reading,
+    [data-theme="dark"] .blog-description {
+        color: #888;
+    }
+
+    [data-theme="dark"] .post-date a,
+    [data-theme="dark"] .post-reading a,
+    [data-theme="dark"] .blog-description a {
+        color: #888;
+    }
+
+    [data-theme="dark"] .post-line:after {
+        border-bottom-color: #555;
+    }
+
+    [data-theme="dark"] .post-content a:hover {
+        border-bottom-color: #ff6b6b;
+    }
+
+    [data-theme="dark"] .post-tags,
+    [data-theme="dark"] .share {
+        color: #888;
+    }
+
+    /* Post list / stubs */
+    [data-theme="dark"] .post-stub {
+        border-bottom-color: #444;
+    }
+
+    [data-theme="dark"] .post-stub a {
+        color: #d0d0d0;
+    }
+
+    [data-theme="dark"] .post-stub a:hover {
+        background: #16213e;
+        color: #ff6b6b;
+    }
+
+    [data-theme="dark"] .post-stub-tag {
+        background: #555;
+    }
+
+    /* Navigation buttons */
+    [data-theme="dark"] .newer-posts:hover,
+    [data-theme="dark"] .older-posts:hover {
+        background: #e0e0e0;
+        color: #1a1a2e;
+    }
+
+    /* Author */
+    [data-theme="dark"] .author-name {
+        color: #f0f0f0;
+    }
+
+    [data-theme="dark"] .author-meta {
+        color: #888;
+    }
+
+    [data-theme="dark"] .author-profile:after {
+        border-bottom-color: #444;
+    }
+
+    /* Footer */
+    [data-theme="dark"] .footer {
+        background: #0f0f23;
+    }
+
+    [data-theme="dark"] .footer .site-title a:hover,
+    [data-theme="dark"] .footer .button-square:hover {
+        background: #F03838;
+    }
+
+    /* Wrapper */
+    [data-theme="dark"] #wrapper {
+        background: #1a1a2e;
+    }
+
+    /* Selection */
+    [data-theme="dark"] ::selection {
+        background: #F03838;
+        color: #fff;
+    }
+
+    [data-theme="dark"] ::-moz-selection {
+        background: #F03838;
+        color: #fff;
+    }
+
+    /* Syntax highlighting */
+    [data-theme="dark"] .highlight pre,
+    [data-theme="dark"] .highlight code {
+        background: #16213e;
+        color: #e0e0e0;
+    }
+
+    [data-theme="dark"] .chroma {
+        background: #16213e;
+        color: #e0e0e0;
+    }
+
+    /* Syntax token overrides for dark mode */
+    [data-theme="dark"] .chroma .k,
+    [data-theme="dark"] .chroma .kc,
+    [data-theme="dark"] .chroma .kd,
+    [data-theme="dark"] .chroma .kn,
+    [data-theme="dark"] .chroma .kp,
+    [data-theme="dark"] .chroma .kr { color: #c792ea; }
+
+    [data-theme="dark"] .chroma .o,
+    [data-theme="dark"] .chroma .p { color: #89ddff; }
+
+    [data-theme="dark"] .chroma .n,
+    [data-theme="dark"] .chroma .na,
+    [data-theme="dark"] .chroma .nb,
+    [data-theme="dark"] .chroma .nc,
+    [data-theme="dark"] .chroma .no,
+    [data-theme="dark"] .chroma .nd,
+    [data-theme="dark"] .chroma .ni,
+    [data-theme="dark"] .chroma .ne,
+    [data-theme="dark"] .chroma .nf,
+    [data-theme="dark"] .chroma .nn,
+    [data-theme="dark"] .chroma .nt,
+    [data-theme="dark"] .chroma .nv { color: #82aaff; }
+
+    [data-theme="dark"] .chroma .s,
+    [data-theme="dark"] .chroma .sa,
+    [data-theme="dark"] .chroma .sb,
+    [data-theme="dark"] .chroma .sc,
+    [data-theme="dark"] .chroma .dl,
+    [data-theme="dark"] .chroma .sd,
+    [data-theme="dark"] .chroma .s2,
+    [data-theme="dark"] .chroma .se,
+    [data-theme="dark"] .chroma .sh,
+    [data-theme="dark"] .chroma .si,
+    [data-theme="dark"] .chroma .sx,
+    [data-theme="dark"] .chroma .sr,
+    [data-theme="dark"] .chroma .s1,
+    [data-theme="dark"] .chroma .ss { color: #c3e88d; }
+
+    [data-theme="dark"] .chroma .m,
+    [data-theme="dark"] .chroma .mb,
+    [data-theme="dark"] .chroma .mf,
+    [data-theme="dark"] .chroma .mh,
+    [data-theme="dark"] .chroma .mi,
+    [data-theme="dark"] .chroma .il,
+    [data-theme="dark"] .chroma .mo { color: #f78c6c; }
+
+    [data-theme="dark"] .chroma .c,
+    [data-theme="dark"] .chroma .ch,
+    [data-theme="dark"] .chroma .cm,
+    [data-theme="dark"] .chroma .c1,
+    [data-theme="dark"] .chroma .cs,
+    [data-theme="dark"] .chroma .cp,
+    [data-theme="dark"] .chroma .cpf { color: #676e95; }
+
+    [data-theme="dark"] .chroma .gd { color: #ff5370; background: rgba(255,83,112,0.1); }
+    [data-theme="dark"] .chroma .gi { color: #c3e88d; background: rgba(195,232,141,0.1); }
+    [data-theme="dark"] .chroma .ge { font-style: italic; }
+    [data-theme="dark"] .chroma .gs { font-weight: bold; }
+</style>
+
+<!-- Prevent flash of wrong theme/font-size -->
+<script>
+    (function() {
+        var theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+        var fs = localStorage.getItem('font-scale');
+        if (fs) {
+            document.documentElement.style.setProperty('--font-scale', fs);
+        }
+    })();
+</script>

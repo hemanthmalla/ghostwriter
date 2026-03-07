@@ -1,0 +1,87 @@
+<script>
+(function() {
+    // --- Settings bar expand/collapse ---
+    var bar = document.getElementById('settings-bar');
+    var gear = document.getElementById('settings-toggle');
+
+    if (gear && bar) {
+        gear.addEventListener('click', function() {
+            bar.classList.toggle('expanded');
+        });
+
+        // Collapse when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!bar.contains(e.target)) {
+                bar.classList.remove('expanded');
+            }
+        });
+    }
+
+    // --- Dark mode ---
+    var toggle = document.getElementById('dark-mode-toggle');
+
+    function getThemePreference() {
+        var stored = localStorage.getItem('theme');
+        if (stored) return stored;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function applyTheme(theme) {
+        if (theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+        }
+    }
+
+    applyTheme(getThemePreference());
+
+    if (toggle) {
+        toggle.addEventListener('click', function() {
+            var current = document.documentElement.getAttribute('data-theme');
+            var newTheme = current === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('theme', newTheme);
+            applyTheme(newTheme);
+        });
+    }
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+        if (!localStorage.getItem('theme')) {
+            applyTheme(e.matches ? 'dark' : 'light');
+        }
+    });
+
+    // --- Font size ---
+    var MIN_SCALE = 0.5;
+    var MAX_SCALE = 1.4;
+    var DEFAULT_SCALE = 1;
+    var STEP = 0.1;
+
+    function getCurrentScale() {
+        var stored = localStorage.getItem('font-scale');
+        return stored ? parseFloat(stored) : DEFAULT_SCALE;
+    }
+
+    function applyScale(scale) {
+        scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
+        scale = Math.round(scale * 10) / 10;
+        document.documentElement.style.setProperty('--font-scale', scale);
+        localStorage.setItem('font-scale', scale);
+    }
+
+    var decrease = document.getElementById('font-decrease');
+    var increase = document.getElementById('font-increase');
+
+    if (decrease) {
+        decrease.addEventListener('click', function() {
+            applyScale(getCurrentScale() - STEP);
+        });
+    }
+
+    if (increase) {
+        increase.addEventListener('click', function() {
+            applyScale(getCurrentScale() + STEP);
+        });
+    }
+})();
+</script>
