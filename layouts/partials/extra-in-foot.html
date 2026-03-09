@@ -1,21 +1,121 @@
 <script>
 (function() {
-    // --- Settings bar expand/collapse ---
-    var bar = document.getElementById('settings-bar');
-    var gear = document.getElementById('settings-toggle');
+    var nav = document.getElementById('bottom-nav');
+    var tocToggle = document.getElementById('toc-toggle');
+    var tocDropdown = document.getElementById('toc-dropdown');
+    var tocList = document.getElementById('toc-list');
+    var tocTitle = document.getElementById('toc-current-title');
 
-    if (gear && bar) {
-        gear.addEventListener('click', function() {
-            bar.classList.toggle('expanded');
+    // --- Reading progress bar ---
+    var progressBar = document.getElementById('reading-progress');
+    if (progressBar && document.querySelector('.post-content')) {
+        window.addEventListener('scroll', function() {
+            var scrollTop = window.scrollY || document.documentElement.scrollTop;
+            var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            var progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+            progressBar.style.width = Math.min(progress, 100) + '%';
+        }, { passive: true });
+    }
+
+    // --- Build TOC from post headings ---
+    var postContent = document.querySelector('.post-content');
+    var headings = postContent ? postContent.querySelectorAll('h2[id], h3[id]') : [];
+
+    if (headings.length === 0) {
+        // No headings = not a post page, hide TOC toggle and its dividers
+        if (tocToggle) tocToggle.classList.add('hidden');
+        // Hide the dividers around the TOC toggle
+        var dividers = document.querySelectorAll('.bottom-nav-divider');
+        if (dividers.length >= 2) dividers[0].classList.add('hidden');
+        if (dividers.length >= 2) dividers[1].classList.add('hidden');
+    } else {
+        // Populate TOC
+        for (var i = 0; i < headings.length; i++) {
+            var h = headings[i];
+            var a = document.createElement('a');
+            a.href = '#' + h.id;
+            a.className = 'toc-link' + (h.tagName === 'H3' ? ' toc-h3' : '');
+            a.textContent = h.textContent;
+            a.setAttribute('data-heading-id', h.id);
+            tocList.appendChild(a);
+        }
+
+        // Click handler for TOC links
+        tocList.addEventListener('click', function(e) {
+            var link = e.target.closest('.toc-link');
+            if (!link) return;
+            e.preventDefault();
+            var targetId = link.getAttribute('data-heading-id');
+            var target = document.getElementById(targetId);
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            nav.classList.remove('open');
         });
 
-        // Collapse when clicking outside
-        document.addEventListener('click', function(e) {
-            if (!bar.contains(e.target)) {
-                bar.classList.remove('expanded');
+        // Track current section with IntersectionObserver
+        var tocLinks = tocList.querySelectorAll('.toc-link');
+        var currentIdx = 0;
+
+        function setActive(id) {
+            for (var j = 0; j < tocLinks.length; j++) {
+                var link = tocLinks[j];
+                if (link.getAttribute('data-heading-id') === id) {
+                    link.classList.add('active');
+                    tocTitle.textContent = link.textContent;
+                    currentIdx = j;
+                } else {
+                    link.classList.remove('active');
+                }
             }
+        }
+
+        // Set first as active initially
+        if (tocLinks.length > 0) {
+            setActive(headings[0].id);
+        }
+
+        if ('IntersectionObserver' in window) {
+            var observer = new IntersectionObserver(function(entries) {
+                // Find the topmost visible heading
+                var visible = [];
+                for (var k = 0; k < entries.length; k++) {
+                    if (entries[k].isIntersecting) {
+                        visible.push(entries[k]);
+                    }
+                }
+                if (visible.length > 0) {
+                    // Pick the one closest to the top
+                    visible.sort(function(a, b) {
+                        return a.boundingClientRect.top - b.boundingClientRect.top;
+                    });
+                    setActive(visible[0].target.id);
+                }
+            }, {
+                rootMargin: '-10% 0px -70% 0px',
+                threshold: 0
+            });
+
+            for (var m = 0; m < headings.length; m++) {
+                observer.observe(headings[m]);
+            }
+        }
+    }
+
+    // --- TOC dropdown toggle ---
+    if (tocToggle) {
+        tocToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            nav.classList.toggle('open');
         });
     }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function(e) {
+        if (nav && !nav.contains(e.target)) {
+            nav.classList.remove('open');
+        }
+    });
 
     // --- Dark mode ---
     var toggle = document.getElementById('dark-mode-toggle');

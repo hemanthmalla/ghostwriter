@@ -26,21 +26,31 @@
     <body>
         {{ template "_internal/google_analytics.html" . }}
 
-        <div class="settings-bar" id="settings-bar">
-            <button class="settings-btn" id="settings-toggle" aria-label="Settings" title="Settings">
-                <i class="fa fa-cog" aria-hidden="true"></i>
-            </button>
-            <div class="settings-actions">
-                <button class="settings-btn" id="font-decrease" aria-label="Decrease font size" title="Decrease font size">
+        <!-- Reading progress bar -->
+        <div class="reading-progress" id="reading-progress"></div>
+
+        <!-- Bottom floating nav bar -->
+        <div class="bottom-nav" id="bottom-nav">
+            <div class="bottom-nav-bar">
+                <button class="bottom-nav-btn" id="font-decrease" aria-label="Decrease font size" title="Decrease font size">
                     <span class="font-label">A</span><span class="font-symbol">&minus;</span>
                 </button>
-                <button class="settings-btn" id="font-increase" aria-label="Increase font size" title="Increase font size">
+                <button class="bottom-nav-btn" id="font-increase" aria-label="Increase font size" title="Increase font size">
                     <span class="font-label">A</span><span class="font-symbol">+</span>
                 </button>
-                <button class="settings-btn" id="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <span class="bottom-nav-divider"></span>
+                <button class="bottom-nav-toc-toggle" id="toc-toggle" aria-label="Table of contents" title="Table of contents">
+                    <span class="toc-current-title" id="toc-current-title">Sections</span>
+                    <svg class="toc-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15L12 9L6 15"/></svg>
+                </button>
+                <span class="bottom-nav-divider"></span>
+                <button class="bottom-nav-btn" id="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
                     <i class="fa fa-moon-o icon-moon" aria-hidden="true"></i>
                     <i class="fa fa-sun-o icon-sun" aria-hidden="true"></i>
                 </button>
+            </div>
+            <div class="bottom-nav-dropdown" id="toc-dropdown">
+                <nav class="toc-list" id="toc-list"></nav>
             </div>
         </div>
 
